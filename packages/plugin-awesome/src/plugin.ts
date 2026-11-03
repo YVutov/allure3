@@ -15,6 +15,7 @@ import {
   type ReportExecutorInfo,
   type ReportRunSummary,
   type Plugin,
+  type PluginExpressionFields,
   type PluginContext,
   type PluginSummary,
   createPluginSummary,
@@ -112,6 +113,12 @@ type PerfAwarePluginContext = PluginContext & {
 };
 
 export class AwesomePlugin implements Plugin {
+  static readonly configExpressions = {
+    filter: "testFilter",
+    reportName: "name",
+    charts: { items: { title: "name" } },
+  } as const satisfies PluginExpressionFields;
+
   // Updating runs retain all assets through done; only start resets this policy.
   #retainAllAssets = false;
 
@@ -250,7 +257,7 @@ export class AwesomePlugin implements Plugin {
       }
     }
     await measure("charts", () => generateAllCharts(this.#writer!, store, this.options, context));
-    const hasMetrics = await generateMetricsWidget(this.#writer!, store, context.reportUuid);
+    const hasMetrics = await generateMetricsWidget(this.#writer!, store, context.reportUuid, context.metricHierarchy);
 
     const convertedTrs = await measure("convert", () =>
       generateTestResults(this.#writer!, store, allTrs, {
@@ -412,7 +419,11 @@ export class AwesomePlugin implements Plugin {
         runSummaryByEnv,
         reportDataFiles,
         requiredAssetFeatures: chartFeatures
-          ? [...chartFeatures, ...collectViewerAssetFeatures(convertedTrs, attachments, globals)]
+          ? [
+              ...chartFeatures,
+              ...(hasMetrics ? ["chart-metrics-timeline"] : []),
+              ...collectViewerAssetFeatures(convertedTrs, attachments, globals),
+            ]
           : undefined,
       }),
     );

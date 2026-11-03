@@ -1,4 +1,5 @@
 import {
+  type LabelMatcher,
   type TestLabel,
   type TestResult,
   createDictionary,
@@ -28,7 +29,7 @@ const mapLabelsByName = (labels: TestLabel[]): Record<string, string[]> => {
 export const convertTestResult = (
   tr: TestResult,
   options: {
-    hideLabels?: readonly (string | RegExp)[];
+    hideLabels?: readonly LabelMatcher[];
     ideaLinks?: boolean | IdeaLinksOptions;
     resolutionEvaluatedAt?: number;
   } = {},
