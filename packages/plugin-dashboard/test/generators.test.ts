@@ -156,3 +156,17 @@ describe("generateEnvirontmentsList", () => {
     ]);
   });
 });
+
+it("writes a valid empty charts widget when the layout is empty", async () => {
+  const writeWidget = vi.fn().mockResolvedValue(undefined);
+  const writer: DashboardDataWriter = { writeWidget };
+  const store = {
+    allEnvironmentIdentities: async () => [],
+    allTestResults: async () => [],
+    allHistoryDataPoints: async () => [],
+  } as unknown as AllureStore;
+
+  await generateAllCharts(writer, store, { layout: [] }, { reportName: "Empty dashboard" } as PluginContext);
+
+  expect(writeWidget).toHaveBeenCalledWith("charts.json", { general: {}, byEnv: {} });
+});
