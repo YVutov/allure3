@@ -19,8 +19,7 @@ export interface HistoryTestResult {
   error?: TestError;
 
   /**
-   * The flaky flag and status transition of the result, used to match the result to categories.
-   * History points written by older versions don't have them
+   * Result classification used by category and transition consumers. Older history points may omit these fields.
    */
   flaky?: boolean;
   transition?: TestStatusTransition;

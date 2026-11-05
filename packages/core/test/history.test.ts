@@ -664,7 +664,10 @@ describe("createHistory", () => {
     expect(history.testResults["single-retry-hash"].retries).toEqual([]);
   });
 
-  it("should store the error, flaky flag and status transition used to match history to categories", () => {
+  it("should store the error, flaky flag and status transition used to match history to categories", async () => {
+    await story("status-transitions");
+    await label("coverage", "status-transitions");
+
     const testResults = [
       {
         id: "result-id",
